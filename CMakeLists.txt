@@ -19,9 +19,13 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(cv_bridge REQUIRED)
+find_package(OpenCV REQUIRED)
+find_package(Eigen3 REQUIRED)
 
 add_executable(align src/align.cpp)
-ament_target_dependencies(align rclcpp sensor_msgs)
+ament_target_dependencies(align rclcpp sensor_msgs Eigen3 OpenCV cv_bridge)
 
 install(TARGETS
 	align
