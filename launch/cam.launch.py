@@ -61,23 +61,44 @@ def generate_launch_description():
         ),
 
         ComposableNodeContainer(
+            prefix=['xterm -e gdb --args'],
             name='container',
             namespace='',
             package='rclcpp_components',
             executable='component_container',
             composable_node_descriptions=[
-                # Driver itself
+                # Registers the depth image in the thermal camera frame
+                ComposableNode(
+                    package='depth_image_proc',
+                    plugin='depth_image_proc::RegisterNode',
+                    name='register_node',
+                    remappings=[
+                        #Subscribed
+                        ('rgb/camera_info', '/thermal/camera/camera_info'),
+                        ('rgb/image_rect_color', '/thermal/camera/image_rect'),
+                        ('depth/camera_info', '/camera/depth/camera_info'),
+                        ('depth/image_rect', '/camera/depth/image_rect_raw'),
+                        ('points', '/thermal/camera/points'),
+                        #Published
+                        ('depth_registered/image_rect', '/thermal/camera/depth_registered/image_rect'),
+                        ('depth_registered/camera_info', '/thermal/camera/depth_registered/camera_info'),
+                    ]
+                ),
+                #Takes the registered depth and thermal images and creates a 3D point cloud
                 ComposableNode(
                     package='depth_image_proc',
                     plugin='depth_image_proc::PointCloudXyzrgbNode',
                     name='point_cloud_xyzrgb_node',
                     remappings=[
+                        #Subscribed
                         ('rgb/camera_info', '/thermal/camera/camera_info'),
                         ('rgb/image_rect_color', '/thermal/camera/image_rect'),
-                        ('depth_registered/image_rect', '/camera/aligned_depth_to_color/image_rect_raw'),
-                        ('points', '/thermal/camera/points')
+                        ('depth_registered/image_rect', '/thermal/camera/depth_registered/image_rect'),                       
+                        #Published
+                        ('points', '/thermal/camera/points'),
                     ]
                 ),
+                
             ],
             output='screen',
         ),
