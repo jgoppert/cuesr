@@ -27,16 +27,13 @@ find_package(Eigen3 REQUIRED)
 add_executable(align src/align.cpp)
 ament_target_dependencies(align rclcpp sensor_msgs Eigen3 OpenCV cv_bridge)
 
-install(TARGETS
-	align
-	DESTINATION lib/${PROJECT_NAME})
-
-install(DIRECTORY
-	launch
-	config
-	scripts
-	DESTINATION share/${PROJECT_NAME}
+install(TARGETS align
+	LIBRARY DESTINATION lib
+	ARCHIVE DESTINATION lib
+	RUNTIME DESTINATION bin
 )
+
+install(DIRECTORY launch config DESTINATION share/${PROJECT_NAME})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
